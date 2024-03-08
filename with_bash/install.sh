@@ -19,7 +19,7 @@ YUM_CMD=$(which yum)
 APT_GET_CMD=$(which apt-get)
 MAC_CMD=$(which brew)
 
-STANDARD_PKGS="curl wget"
+STANDARD_PKGS="curl wget jq"
 
 echo -e "Installing dependencies"
 if [[ ! -z $YUM_CMD ]]; then    
