@@ -21,10 +21,10 @@ kubectl wait --for=jsonpath='{.status.phase}'=Running pod -l app.kubernetes.io/n
 
 echo -e "\npatching nodeport service argocd\n"
 kubectl patch svc argocd-server -n argocd -p \
-  '{"spec": {"type": "NodePort", "ports": [{"name": "http", "nodePort": 30000, "port": 80, "protocol": "TCP", "targetPort": 8080}, {"name": "https", "nodePort": 30001, "port": 443, "protocol": "TCP", "targetPort": 8080}]}}'
+  '{"spec": {"type": "NodePort", "ports": [{"name": "http", "nodePort": 30075, "port": 80, "protocol": "TCP", "targetPort": 8080}, {"name": "https", "nodePort": 30076, "port": 443, "protocol": "TCP", "targetPort": 8080}]}}'
 
 while ! kubectl get secret -n argocd argocd-initial-admin-secret; do echo "Waiting for password secret creation..."; sleep 2; done
 
 ARGOCD_PASS=$(kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo)
 
-echo -e "\n\n\tArgoCD Installed!\n\tNow you can access on http://localhost:30000\n\tusername: admin\n\tpassword:$ARGOCD_PASS\n\n"
+echo -e "\n\n\tArgoCD Installed!\n\tNow you can access on http://localhost:30075\n\tusername: admin\n\tpassword:$ARGOCD_PASS\n\n"
