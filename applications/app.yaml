@@ -9,13 +9,9 @@ spec:
     path: manifests/nginx
     repoURL: https://github.com/MuriloAcsonov/argocd-locally-iac
     targetRevision: main
-    #helm:
-    #  releaseName: nginx
-    #  parameters:
-    #    - name: service.nodePort
-    #      value: "30080"
-    #    - name: autoscaling.enabled
-    #      value: "true"
+    helm:
+      valueFiles:
+      - values-prod.yaml
   destination:
     server: "https://kubernetes.default.svc"
     namespace: default
@@ -37,13 +33,9 @@ spec:
     path: manifests/nginx
     repoURL: https://github.com/MuriloAcsonov/argocd-locally-iac
     targetRevision: main
-    #helm:
-    #  releaseName: nginx
-    #  parameters:
-    #    - name: service.nodePort
-    #      value: "30080"
-    #    - name: autoscaling.enabled
-    #      value: "true"
+    helm:
+      valueFiles:
+      - values-prod.yaml
   destination:
     server: "https://kubernetes.default.svc"
     namespace: default
