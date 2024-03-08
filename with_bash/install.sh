@@ -4,7 +4,7 @@ echo "#2: kubectl (won't be installed automatically)"
 echo "#3: curl and Wget (will be installed automatically)"
 echo "#4: k3d (will be installed automatically)"
 echo "#5: argocd (will be installed automatically)"
-echo -e "#6: helm (will be installed automatically)\n"
+echo -e "#6: helm (will be installed automatically)\n\n"
 
 if ! [ -x "$(command -v docker)" ]; then
   echo 'Error: docker is not installed.' >&2
@@ -21,7 +21,7 @@ MAC_CMD=$(which brew)
 
 STANDARD_PKGS="curl wget jq"
 
-echo -e "Installing dependencies"
+echo -e "\nInstalling dependencies\n"
 if [[ ! -z $YUM_CMD ]]; then    
     yum install -y $STANDARD_PKGS
  elif [[ ! -z $APT_GET_CMD ]]; then
@@ -33,6 +33,7 @@ if [[ ! -z $YUM_CMD ]]; then
     exit 1;
  fi
 
+echo -e "\nInstalling argocd\n"
 if ! [ -x "$(command -v argocd)" ]; then
    if [[ ! -z $MAC_CMD ]]; then
       VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
@@ -45,12 +46,13 @@ if ! [ -x "$(command -v argocd)" ]; then
       rm argocd-linux-amd64
    fi
 else
-   echo -e '\nargocd is already installed.' >&2     
+   echo -e '\nargocd is already installed.\n' >&2     
 fi
 
+echo -e "\nInstalling k3d\n"
 if ! [ -x "$(command -v k3d)" ]; then
    echo -e "\nInstalling k3d"
    curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash   
 else
-   echo -e '\nk3d is already installed.' >&2     
+   echo -e '\nk3d is already installed.\n' >&2     
 fi

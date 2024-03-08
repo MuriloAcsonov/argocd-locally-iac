@@ -1,4 +1,4 @@
-echo "\t\nInstalling ArgoCD"
+echo "\t\nInstalling ArgoCD\n"
 echo "Prerequisites:"
 echo -e "#1: kubectl (won't be installed automatically)\n"
 
@@ -10,17 +10,21 @@ fi
 export KUBECONFIG=$HOME/.kube/config
 kubectl config use-context k3d-prod
 
+echo -e "\ncreating ns argocd\n"
 kubectl create ns argocd
 
-echo -e "aplying argocd to the prd cluster..."
+echo -e "\naplying argocd to the prd cluster...\n"
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-echo -e "Waiting for argocd server run\n"
-kubectl wait --for=jsonpath='{.status.phase}'=Running pod -l app.kubernetes.io/name=argocd-server -n argocd
+echo -e "\nWaiting for argocd server run\n"
+kubectl wait --for=jsonpath='{.status.phase}'=Running pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=-1s
 
+echo -e "\npatching nodeport service argocd\n"
 kubectl patch svc argocd-server -n argocd -p \
   '{"spec": {"type": "NodePort", "ports": [{"name": "http", "nodePort": 30000, "port": 80, "protocol": "TCP", "targetPort": 8080}, {"name": "https", "nodePort": 30001, "port": 443, "protocol": "TCP", "targetPort": 8080}]}}'
 
+while ! kubectl get secret -n argocd argocd-initial-admin-secret; do echo "Waiting for password secret creation..."; sleep 2; done
+
 ARGOCD_PASS=$(kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo)
 
-echo -e "\t\n\nArgoCD Installed\n\tNow you can access on http://localhost:30000\n\tusername: admin\n\tpassword:$ARGOCD_PASS\n\n"
+echo -e "\n\n\tArgoCD Installed!\n\tNow you can access on http://localhost:30000\n\tusername: admin\n\tpassword:$ARGOCD_PASS\n\n"
