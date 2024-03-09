@@ -1,5 +1,5 @@
 ARGOCD_PASS=$(kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo)
-argocd login localhost:30000 --insecure --username admin --password $ARGOCD_PASS
+argocd login localhost:30075 --insecure --username admin --password $ARGOCD_PASS
 argocd cluster add -y k3d-prod >&2
 argocd cluster add -y k3d-dev >&2
 

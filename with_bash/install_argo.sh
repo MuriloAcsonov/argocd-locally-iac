@@ -8,6 +8,11 @@ if ! [ -x "$(command -v kubectl)" ]; then
 fi
 
 export KUBECONFIG=$HOME/.kube/config
+kubectl config use-context k3d-dev
+
+echo -e "\ncreating ns argocd\n"
+kubectl create ns argocd
+
 kubectl config use-context k3d-prod
 
 echo -e "\ncreating ns argocd\n"
@@ -24,7 +29,3 @@ kubectl patch svc argocd-server -n argocd -p \
   '{"spec": {"type": "NodePort", "ports": [{"name": "http", "nodePort": 30075, "port": 80, "protocol": "TCP", "targetPort": 8080}, {"name": "https", "nodePort": 30076, "port": 443, "protocol": "TCP", "targetPort": 8080}]}}'
 
 while ! kubectl get secret -n argocd argocd-initial-admin-secret; do echo "Waiting for password secret creation..."; sleep 2; done
-
-ARGOCD_PASS=$(kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo)
-
-echo -e "\n\n\tArgoCD Installed!\n\tNow you can access on http://localhost:30075\n\tusername: admin\n\tpassword:$ARGOCD_PASS\n\n"
