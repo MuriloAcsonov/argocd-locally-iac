@@ -1,0 +1,15 @@
+- name: Check k3d
+  command: which k3d
+  changed_when: false
+  ignore_errors: yes
+  register: k3d_installed
+
+- name: Install k3d
+  when: k3d_installed.rc == 1
+  shell: wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+
+- name: Create Cluster Prod
+  shell: k3d cluster create prod --api-port 6443 -p "30075-30080:30075-30080@server:0" || echo "prod cluster already exists"
+
+- name: Create Cluster Dev
+  shell: k3d cluster create dev --api-port 6444 -p "30081-30091:30081-30091@server:0" || echo "dev cluster already exists"

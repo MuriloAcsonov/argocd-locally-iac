@@ -1,0 +1,37 @@
+- name: Check kubectl
+  command: which kubectl
+  changed_when: false
+  ignore_errors: yes
+  register: kubectl_installed
+
+- name: Check kubectl installation status
+  fail:
+    msg: "kubectl appears to be missing, install first"
+  when: kubectl_installed.rc == 1
+
+- name: Check docker
+  command: which docker
+  changed_when: false
+  ignore_errors: yes
+  register: docker_installed
+
+- name: Check docker installation status
+  fail:
+    msg: "docker appears to be missing, install first"
+  when: docker_installed.rc == 1
+
+- name: Install curl
+  ansible.builtin.package:
+    name: curl
+    state: present
+
+- name: Install wget
+  ansible.builtin.package:
+    name: wget
+    state: present
+
+- name: Install jq
+  ansible.builtin.package:
+    name: jq
+    state: present
+    

@@ -1,0 +1,11 @@
+- name: Install Argocd
+  include_tasks: install.yaml
+  when: task == 'argo_install'
+
+- name: Configuring docker hosts
+  include_tasks: configure_docker.yaml
+  when: task == 'configure_docker'
+
+- name: Configuring argo apps
+  include_tasks: configure_apps.yaml
+  when: task == 'configure_apps'

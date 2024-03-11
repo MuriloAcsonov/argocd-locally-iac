@@ -1,0 +1,34 @@
+- name: Create NS ArgoCD Dev
+  shell: kubectl config use-context k3d-dev && kubectl create ns argocd || echo "dev ns already exists"
+  environment:
+    KUBECONFIG: "{{ lookup('env', 'HOME') }}/.kube/config"
+
+- name: Create NS ArgoCD Prod
+  shell: kubectl config use-context k3d-prod && kubectl create ns argocd || echo "prod ns already exists"
+  environment:
+    KUBECONFIG: "{{ lookup('env', 'HOME') }}/.kube/config"
+
+- name: Install ArgoCD Prod
+  shell: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+- name: Wait
+  shell: kubectl wait --for=jsonpath='{.status.phase}'=Running pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=-1s
+
+- name: Final adjustments on argocd
+  shell: |
+    kubectl patch svc argocd-server -n argocd -p \
+    '{"spec": {"type": "NodePort", "ports": [{"name": "http", "nodePort": 30075, "port": 80, "protocol": "TCP", "targetPort": 8080}, {"name": "https", "nodePort": 30076, "port": 443, "protocol": "TCP", "targetPort": 8080}]}}' &&
+    while ! kubectl get secret -n argocd argocd-initial-admin-secret; do echo "Waiting for password secret creation..."; sleep 2; done
+    ansible-galaxy collection install kubernetes.core
+  
+- name: Argocd UI
+  shell: |
+    ARGOCD_PASS=$(kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo)
+    echo "ArgoCD Installed!"
+    echo "You can access ArgoCD on:"
+    echo "http://localhost:30075"
+    echo "username: admin"
+    echo "password: $ARGOCD_PASS"
+  register: out
+
+- debug: msg={{ out.stdout_lines }}

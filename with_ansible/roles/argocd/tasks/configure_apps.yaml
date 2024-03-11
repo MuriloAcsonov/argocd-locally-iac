@@ -1,0 +1,24 @@
+- name: Create a Apps by reading the definition from a local file
+  kubernetes.core.k8s:
+    state: present
+    src: ../../../../applications/app.yaml
+
+- name: Finishing apps
+  shell: |
+    sleep 20
+    while ! kubectl get secret -n argocd argocd-initial-admin-secret; do echo "Waiting for password secret creation..."; sleep 2; done
+    ARGOCD_PASS=$(kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo)
+    argocd login localhost:30075 --insecure --username admin --password $ARGOCD_PASS
+    argocd app get nginx-dev --hard-refresh
+    argocd app get nginx --hard-refresh
+
+- name: Apps
+  shell: |
+    echo "Also, you can see on ArgoCD UI our apps:"
+    echo "Prod: nginx"
+    echo "Available on: http://localhost:30080"
+    echo "Dev: nginx-dev"
+    echo "Available on: http://localhost:30081"
+  register: out
+
+- debug: msg={{ out.stdout_lines }}

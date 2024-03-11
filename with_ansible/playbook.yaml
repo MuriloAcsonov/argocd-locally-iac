@@ -1,0 +1,8 @@
+- name: OK!
+  hosts: localhost
+  roles:
+    - verify_reqs
+    - k3d
+    - { role: argocd, task: argo_install }
+    - { role: argocd, task: configure_docker }
+    - { role: argocd, task: configure_apps }

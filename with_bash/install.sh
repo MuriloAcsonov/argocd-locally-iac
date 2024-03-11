@@ -1,7 +1,7 @@
 echo "Installing Prerequisites:" 
 echo "#1: docker (won't be installed automatically)"
 echo "#2: kubectl (won't be installed automatically)"
-echo "#3: curl and Wget (will be installed automatically)"
+echo "#3: curl, wget and jq (will be installed automatically)"
 echo "#4: k3d (will be installed automatically)"
 echo "#5: argocd (will be installed automatically)"
 echo -e "#6: helm (will be installed automatically)\n\n"
